@@ -79,6 +79,21 @@ public class PrincipalController {
         stage.setScene(scene);
         stage.setTitle("Añadir Libro");
         stage.setResizable(false);
-        stage.show();
+        stage.showAndWait();
+        List<Libro> libros = LibroDAO.findAll();
+        librosLst.getItems().setAll(libros);
+    }
+
+    public void editarLibro(ActionEvent actionEvent) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("libroForm.fxml"));
+        Scene scene = new Scene(fxmlLoader.load());
+        LibroFormController controlador = fxmlLoader.getController();
+        controlador.setLibro(librosLst.getSelectionModel().getSelectedItem());
+        Stage stage = new Stage();
+        stage.setScene(scene);
+
+        stage.setTitle("Editar Libro");
+        stage.setResizable(false);
+        stage.showAndWait();
     }
 }

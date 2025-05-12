@@ -71,7 +71,7 @@
       <HBox prefHeight="33.0" prefWidth="600.0" VBox.vgrow="NEVER">
          <children>
             <Button mnemonicParsing="false" onAction="#anadirLibro" text="Añadir" />
-            <Button mnemonicParsing="false" text="Editar" />
+            <Button mnemonicParsing="false" onAction="#editarLibro" text="Editar" />
             <Button mnemonicParsing="false" onAction="#borrarLibroSeleccionado" text="Borrar" />
          </children>
       </HBox>
