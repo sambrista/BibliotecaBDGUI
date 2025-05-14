@@ -5,13 +5,12 @@ import es.iesfranciscodelosrios.bibliotecabdgui.DAO.LibroDAO;
 import es.iesfranciscodelosrios.bibliotecabdgui.MainApplication;
 import es.iesfranciscodelosrios.bibliotecabdgui.model.Autor;
 import es.iesfranciscodelosrios.bibliotecabdgui.model.Libro;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
@@ -22,6 +21,8 @@ public class PrincipalController {
     public Label tituloLbl;
     public Label isbnLbl;
     public Label autorLbl;
+    public Button editarBtn;
+    public Button borrarBtn;
     @FXML
     private ListView<Libro> librosLst;
 
@@ -44,21 +45,27 @@ public class PrincipalController {
     public void mostrarLibroSeleccionado(MouseEvent mouseEvent) {
         Libro libroSeleccionado = librosLst.getSelectionModel().getSelectedItem();
         if (libroSeleccionado != null) {
-            Autor autor = AutorDAO.findByBookId(libroSeleccionado.getIdLibro());
-            libroSeleccionado.setAutor(autor);
-            mostrarInformacionLibro(libroSeleccionado);
+            if (libroSeleccionado.getAutor() == null){
+                Autor autor = AutorDAO.findByBookId(libroSeleccionado.getIdLibro());
+                libroSeleccionado.setAutor(autor);
+            }
+            actualizarInterfazLibroSeleccionado(libroSeleccionado);
         }
     }
 
-    private void mostrarInformacionLibro(Libro libro) {
+    private void actualizarInterfazLibroSeleccionado(Libro libro) {
         if (libro != null) {
             tituloLbl.setText(libro.getTitulo());
             isbnLbl.setText(libro.getIsbn());
             autorLbl.setText(libro.getAutor().getNombreAutor());
+            editarBtn.setDisable(false);
+            borrarBtn.setDisable(false);
         } else  {
             tituloLbl.setText("");
             isbnLbl.setText("");
             autorLbl.setText("");
+            editarBtn.setDisable(true);
+            borrarBtn.setDisable(true);
         }
     }
 
@@ -68,7 +75,7 @@ public class PrincipalController {
             LibroDAO.deleteLibroById(libroSeleccionado);
             librosLst.getItems().remove(libroSeleccionado);
             librosLst.getSelectionModel().clearSelection();
-            mostrarInformacionLibro(null);
+            actualizarInterfazLibroSeleccionado(null);
         }
     }
 
@@ -82,6 +89,7 @@ public class PrincipalController {
         stage.showAndWait();
         List<Libro> libros = LibroDAO.findAll();
         librosLst.getItems().setAll(libros);
+        actualizarInterfazLibroSeleccionado(null);
     }
 
     public void editarLibro(ActionEvent actionEvent) throws IOException {
@@ -95,5 +103,19 @@ public class PrincipalController {
         stage.setTitle("Editar Libro");
         stage.setResizable(false);
         stage.showAndWait();
+        librosLst.refresh();
+        actualizarInterfazLibroSeleccionado(librosLst.getSelectionModel().getSelectedItem());
+    }
+
+    public void cerrarAplicacion(ActionEvent actionEvent) {
+        Platform.exit();
+    }
+
+    public void mostrarDialogoAcercaDe(ActionEvent actionEvent) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Acerca de");
+        alert.setHeaderText("BibliotecaBD GUI 1.0");
+        alert.setContentText("BibliotecaBD GUI es una aplicación que permite usar una interfaz gráfica para consultar la base de datos de una biblioteca. Ha sido desarrollada por Alfonso Jiménez Vílchez.");
+        alert.show();
     }
 }
